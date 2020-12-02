@@ -259,12 +259,12 @@ void MainWindow::on_actionOpen_triggered()
                     QTextStream in(&sFile1);
                     QString text = in.readAll();
                     sFile.close();
-                    ui->textBrowser->setPlainText(text);
+                    ui->textBrowser->setHtml(text);
                 } else {
                     QTextStream in(&sFile);
                     QString text = in.readAll();
                     sFile.close();
-                    ui->textBrowser->setPlainText(text);
+                    ui->textBrowser->setHtml(text);
                 }
                 // load and show image:
                 QString localmFilename = mFilename;
@@ -386,7 +386,7 @@ void MainWindow::on_actionSpell_Check_triggered()
 
        }
        strHtml += "</body></html>";
-       ui->textBrowser->setHtml(QString::fromStdString(strHtml));
+       //ui->textBrowser->setHtml(QString::fromStdString(strHtml));
        //dialog->progressBar-> setValue(WordCount);
 
        //secdialog.progressBar.setValue(WordCount);
@@ -755,7 +755,7 @@ void MainWindow::on_actionSave_triggered()
                   if(sFile.open(QFile::WriteOnly | QFile::Text))
                   {
                       QTextStream out(&sFile);
-                      out << ui->textBrowser->toPlainText();
+                      out << ui->textBrowser->toHtml();
                       sFile.flush();
                       sFile.close();
                   }
@@ -1078,6 +1078,7 @@ void MainWindow::on_actionLoadSubPS_triggered()
     loadStr += "\n" + QString::number(count) + " Substrings and 71 Sandhi Rules Loaded.";
     loadStr1 = loadStr + "Please wait...";
     ui->textBrowser->setPlainText(loadStr1);
+
 }
 
 
@@ -1106,6 +1107,7 @@ void MainWindow::on_actionLoadConfusions_triggered()
     loadTopConfusions(ConfPmap,TopConfusions,TopConfusionsMask);
 
     ui->textBrowser->setPlainText(loadStr1);
+
 
 }
 
@@ -2428,4 +2430,50 @@ void MainWindow::on_actionHindi_triggered()
 void MainWindow::on_actionEnglish_triggered()
 {
     HinFlag = 0 , SanFlag = 0;
+}
+
+
+void MainWindow::toBold()
+{
+    QTextCursor cursor = ui->textBrowser->textCursor();
+    bool isBold = cursor.charFormat().font().bold();
+    QTextCharFormat fmt;
+    fmt.setFontWeight(isBold ? QFont::Normal : QFont::Bold);
+    cursor.mergeCharFormat(fmt);
+    ui->textBrowser->mergeCurrentCharFormat(fmt);
+}
+
+void MainWindow::toSubscript()
+{
+    QTextCursor cursor = ui->textBrowser->textCursor();
+    QTextCharFormat fmt;
+    fmt.setVerticalAlignment((cursor.charFormat().verticalAlignment() == QTextCharFormat::AlignSubScript)? QTextCharFormat::AlignNormal : QTextCharFormat::AlignSubScript);
+    cursor.mergeCharFormat(fmt);
+    ui->textBrowser->mergeCurrentCharFormat(fmt);
+}
+
+void MainWindow::toSuperscript()
+{
+    QTextCursor cursor = ui->textBrowser->textCursor();
+    QTextCharFormat fmt;
+    fmt.setVerticalAlignment((cursor.charFormat().verticalAlignment() == QTextCharFormat::AlignSuperScript)? QTextCharFormat::AlignNormal : QTextCharFormat::AlignSuperScript);
+    cursor.mergeCharFormat(fmt);
+    ui->textBrowser->mergeCurrentCharFormat(fmt);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+        case Qt::Key_B:
+            toBold();
+            break;
+        case Qt::Key_Plus:
+            if(event->modifiers() == Qt::ShiftModifier|Qt::ControlModifier)
+                toSuperscript();
+        case Qt::Key_Equal:
+            if(event->modifiers() == Qt::ControlModifier){
+                toSubscript();}
+            break;
+    }
 }

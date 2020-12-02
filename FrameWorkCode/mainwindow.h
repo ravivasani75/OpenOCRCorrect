@@ -146,6 +146,17 @@ private slots:
 
     void on_actionEnglish_triggered();
 
+    void toBold();
+
+    void toSuperscript();
+
+    void toSubscript();
+
+
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
+
 private:
     Ui::MainWindow *ui;
 
